@@ -39,12 +39,27 @@ class CloudfrontIndexRedirect(TestCase):
 		expected = '/index.html'
 		self.assertEqual(expected, response[requestUri])
 
-
 	def test_origin_request_index_no_ext(self):
 		event = self.load_test_json(originRequestJson)
 		event['Records'][0]['cf']['request'][requestUri] = '/index'
 		response = lambda_handler(event, None)
 		expected = '/index.html'
+		self.assertEqual(expected, response[requestUri])
+
+	def test_origin_request_robots_txt(self):
+		event = self.load_test_json(originRequestJson)
+		robots = '/robots.txt'
+		event['Records'][0]['cf']['request'][requestUri] = robots
+		response = lambda_handler(event, None)
+		expected = robots
+		self.assertEqual(expected, response[requestUri])
+
+	def test_origin_request_sitemap_xml(self):
+		event = self.load_test_json(originRequestJson)
+		sitemap = 'sitemap.xml'
+		event['Records'][0]['cf']['request'][requestUri] = sitemap
+		response = lambda_handler(event, None)
+		expected = sitemap
 		self.assertEqual(expected, response[requestUri])
 
 if __name__ == '__main__':

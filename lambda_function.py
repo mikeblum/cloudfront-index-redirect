@@ -11,7 +11,11 @@ def lambda_handler(event, context):
     """
     request = event['Records'][0]['cf']['request']
     uri = request[requestUri]
-    if search('index.html$', uri):
+    root, ext = path.splitext(uri)
+    if ext:
+        """
+        no-op on explicit url lookups for robots.txt, sitemap.xml, or index.html itself
+        """
         return request
     elif search('index$', uri):
         request[requestUri] = uri  + '.html'
