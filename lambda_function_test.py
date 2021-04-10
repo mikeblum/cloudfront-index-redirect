@@ -18,6 +18,13 @@ class CloudfrontIndexRedirect(TestCase):
 		expected = '/test/index.html'
 		self.assertEqual(expected, response[requestUri])
 
+	def test_origin_request_root(self):
+		event = self.load_test_json(originRequestJson)
+		event['Records'][0]['cf']['request'][requestUri] = '/'
+		response = lambda_handler(event, None)
+		expected = '/index.html'
+		self.assertEqual(expected, response[requestUri])
+
 	def test_origin_request_trailing_slash(self):
 		event = self.load_test_json(originRequestJson)
 		event['Records'][0]['cf']['request'][requestUri] = '/test/'
@@ -25,12 +32,20 @@ class CloudfrontIndexRedirect(TestCase):
 		expected = '/test/index.html'
 		self.assertEqual(expected, response[requestUri])
 
-	def test_origin_request_root(self):
+	def test_origin_request_index(self):
 		event = self.load_test_json(originRequestJson)
-		event['Records'][0]['cf']['request'][requestUri] = '/'
+		event['Records'][0]['cf']['request'][requestUri] = '/index.html'
 		response = lambda_handler(event, None)
 		expected = '/index.html'
 		self.assertEqual(expected, response[requestUri])
-	
+
+
+	def test_origin_request_index_no_ext(self):
+		event = self.load_test_json(originRequestJson)
+		event['Records'][0]['cf']['request'][requestUri] = '/index'
+		response = lambda_handler(event, None)
+		expected = '/index.html'
+		self.assertEqual(expected, response[requestUri])
+
 if __name__ == '__main__':
 	unittest.main()
